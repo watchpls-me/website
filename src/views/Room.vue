@@ -1,9 +1,11 @@
 <template>
+    <v-container>
         <v-layout align-center row wrap>
-            <v-flex xs12>
+            <v-flex xs12 class="text-sm-center">
                 <video ref="video" class="text-sm-center" autoplay playsinline controls :muted="false" width="100%" height="auto"></video>
             </v-flex>
         </v-layout>
+    </v-container>
 </template>
 
 <script>
