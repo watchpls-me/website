@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <Chat></Chat>
+        <Chat :msgs="msgs"></Chat>
         <v-layout align-center row wrap>
             <v-flex xs12 class="text-sm-center">
                 <video ref="video" class="text-sm-center" autoplay playsinline controls :muted="false" width="100%" height="auto"></video>
@@ -15,11 +15,12 @@
   const connection = new RTCMultiConnection()
   import * as io from 'socket.io-client'
   window.io = io // needed due to issue within webrtc
+  // connect to chat
+  const socket = io.connect('http://watchpls.me:3000')
 
   connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/'
   connection.autoCloseEntireSession = true
   connection.socketMessageEvent = 'desktopCapture'
-  connection.enableLogs = true;
   connection.session = {
     audio: true,
     video: true,
@@ -32,18 +33,15 @@
     OfferToReceiveVideo: true
   }
 
-  connection.onmessage((event) => {
-    console.log(event)
-  })
-
   export default {
     name: 'Room',
     components: {Chat},
+    data: () => ({
+      msgs: []
+    }),
     methods: {
       sendMsg (msg) {
-        connection.send({
-          newChatMessage: msg
-        })
+        socket.emit('sendchat', {room: this.$route.params.id, username: msg.username, text: msg.text})
       }
     },
     mounted () {
@@ -54,9 +52,16 @@
 
       connection.channel = connection.sessionid = this.$route.params.id
       connection.join()
+
+      socket.on('getchat', (data) => {
+        console.log("data: " + data)
+        this.msgs.push(data)
+      })
+      socket.emit('join', this.$route.params.id)
     },
     beforeDestroy () {
       connection.close()
+      socket.close()
     }
   }
 </script>
