@@ -1,5 +1,6 @@
 <template>
     <v-container>
+        <Chat></Chat>
         <v-layout align-center row wrap>
             <v-flex xs12 class="text-sm-center">
                 <video ref="video" class="text-sm-center" autoplay playsinline controls :muted="false" width="100%" height="auto"></video>
@@ -9,6 +10,7 @@
 </template>
 
 <script>
+  import Chat from '../components/Chat'
   const RTCMultiConnection = require('rtcmulticonnection')
   const connection = new RTCMultiConnection()
   import * as io from 'socket.io-client'
@@ -30,8 +32,20 @@
     OfferToReceiveVideo: true
   }
 
+  connection.onmessage((event) => {
+    console.log(event)
+  })
+
   export default {
     name: 'Room',
+    components: {Chat},
+    methods: {
+      sendMsg (msg) {
+        connection.send({
+          newChatMessage: msg
+        })
+      }
+    },
     mounted () {
       const video = this.$refs.video
       connection.onstream = function(e) {
