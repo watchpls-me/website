@@ -1,20 +1,27 @@
 <template>
     <v-navigation-drawer
+            v-model="drawer"
             app
             right
+            hide-overlay
+            bottom
     >
         <template v-slot:prepend>
-            <v-card>
-                <v-card-text>
-                    <v-text-field
-                            label="Username"
-                            v-model="username"
-                            dense
-                    ></v-text-field>
-                </v-card-text>
+            <v-card class="d-flex justify-space-between pa-2" flat>
+                <v-card flat>
+                    <v-btn icon>
+                        <v-icon>fas fa-chevron-right</v-icon>
+                    </v-btn>
+                </v-card>
+                <v-card class="pt-1" flat><h3>Chat</h3></v-card>
+                <v-card flat>
+                    <v-btn icon>
+                        <v-icon>fas fa-users</v-icon>
+                    </v-btn>
+                </v-card>
             </v-card>
         </template>
-        <div id="serverlog" class="pa-2" v-chat-scroll>
+        <div id="chat" class="pa-2" v-chat-scroll>
             <v-flex xs12 v-for="msg in msgs">
                 <div v-html="`<b>${msg.username}:</b> ${msg.text}`"></div>
             </v-flex>
@@ -39,10 +46,14 @@
   export default {
     name: 'Chat',
     data: () => ({
+      drawer: true,
       text: '',
-      username: '',
     }),
     props: {
+      username: {
+        value: String,
+        default: ''
+      },
       msgs: {
         type: Array
       }
@@ -59,7 +70,7 @@
 </script>
 
 <style scoped>
-    #serverlog{
+    #chat {
         height: 100%;
         width: 100%;
         overflow: auto;
