@@ -96,7 +96,7 @@ export default {
         title: "Watch Please!", text: "Watch whatever with whoever! WatchPls makes it easy to be with your friends always!", icon: "fas fa-play"
       },
       {
-        title: "Private Rooms!", text: "Each room has its own completely random link accesible only by you and friends! Share wisely!", icon: "fas fa-lock"
+        title: "Private Rooms!", text: "Each room has its own completely random link accessible only by you and friends! Share wisely!", icon: "fas fa-lock"
       },
       {
         title: "Share Anything!", text: "New YouTube video? Favorite Netflix episode? Maybe Hulu? Share it with others easily!", icon: "far fa-file"

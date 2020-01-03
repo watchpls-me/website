@@ -81,6 +81,33 @@
   }
 </script>
 
-<style scoped>
+<style>
+  html {
+    overflow-y: auto;
+  }
 
+  .box {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+  }
+
+  #bot {
+    flex: 1 1 auto;
+    background: white;
+  }
+
+  video::-webkit-media-controls-play-button:hover {
+    /* -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70); */
+    opacity: 0.7;
+  }
+
+  /* video::-webkit-media-controls-fullscreen-button {
+    ;
+  } */
+
+  video::-webkit-media-controls-fullscreen-button:hover {
+    opacity: 0.7;
+  }
 </style>
