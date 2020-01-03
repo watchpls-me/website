@@ -14,9 +14,9 @@
   import * as io from 'socket.io-client'
   window.io = io // needed due to issue within webrtc
   // connect to chat
-  const socket = io.connect('http://watchpls.me:3000')
+  const socket = io.connect('https://chat.watchpls.me/')
 
-  connection.socketURL = 'http://watchpls.me:9001/' // will update ssl soontm
+  connection.socketURL = 'https://rtc.watchpls.me/' // will update ssl soontm
   connection.autoCloseEntireSession = true
   connection.socketMessageEvent = 'desktopCapture'
   connection.session = {
