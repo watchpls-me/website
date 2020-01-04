@@ -11,9 +11,14 @@
                   <v-card hover href="https://chrome.google.com/webstore/category/extensions">
                     <v-list-item>
                       <v-list-item-avatar>
-                        <v-btn icon href="https://chrome.google.com/webstore/category/extensions"> 
-                          <v-icon>fab fa-chrome</v-icon>
-                        </v-btn>
+                        <div class="d-flex align-center">
+                          <v-img
+                                  class="shrink"
+                                  src="@/assets/fox-logo.png"
+                                  transition="scale-transition"
+                                  width="40"
+                          ></v-img>
+                        </div>
                       </v-list-item-avatar>
                       <v-list-item-content>
                         <v-list-item-title>Download WatchPls!</v-list-item-title>

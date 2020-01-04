@@ -1,9 +1,12 @@
 <template>
     <v-app-bar app color="black" dark dense>
-        <v-btn icon href="https://chrome.google.com/webstore/category/extensions">
-            <v-icon>fab fa-chrome</v-icon>
-        </v-btn>
-        <div class="d-flex align-center">
+        <div class="d-flex align-center" @click="$router.push({name: 'home'})" :style="{ cursor: 'pointer'}">
+            <v-img
+                    class="shrink mr-2"
+                    src="@/assets/fox-logo.png"
+                    transition="scale-transition"
+                    width="32"
+            />
             <h3>WatchPls</h3>
         </div>
         <v-spacer></v-spacer>
