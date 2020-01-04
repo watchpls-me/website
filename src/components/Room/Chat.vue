@@ -1,27 +1,27 @@
 <template>
   <div>   <!-- Containment Div : ) -->
-
-    <v-app-bar app color="black" dark dense>    <!-- Toolbar -->
-        <v-btn icon href="https://chrome.google.com/webstore/category/extensions">
-          <v-icon>fab fa-chrome</v-icon>
-        </v-btn>
-        <div class="d-flex align-center">
-            <h3>WatchPls</h3>
-        </div>
-        <v-spacer></v-spacer>
-        <v-btn icon @click="sheet = !sheet">
-          <v-icon>fas fa-users</v-icon>
-        </v-btn>
-        <v-btn icon @click.stop="drawer = !drawer">
-          <v-icon>fas fa-comment</v-icon>
-        </v-btn>
-    </v-app-bar>      <!-- End Toolbar -->
     
-    <v-navigation-drawer v-model="drawer" app right hide-overlay bottom>    <!-- Start Chat -->
+    <v-navigation-drawer id="chatDrawer" v-model="$store.state.settings.chatWindow" app right hide-overlay bottom>    <!-- Start Chat -->
+
+        <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition" attach="#chatDrawer">   <!-- Some kind of settings? -->
+            <v-card>
+                <v-card-title class="headline lighten-2" primary-title>Settings?</v-card-title>
+
+                <v-card-text>This could be settings but you playin</v-card-text>
+
+                <v-divider></v-divider>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="primary" text @click="dialog = !dialog">Close</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>   <!-- End Settings -->
+
         <template v-slot:prepend>
             <v-card class="d-flex justify-space-between pa-2" flat>
                 <v-card flat>
-                    <v-btn icon @click.stop="drawer = !drawer">
+                    <v-btn icon @click.stop="$store.dispatch('toggleChat')">
                         <v-icon>fas fa-chevron-right</v-icon>
                     </v-btn>
                 </v-card>
@@ -53,27 +53,12 @@
         </template>
     </v-navigation-drawer>      <!-- End Chat -->
 
-    <v-bottom-sheet v-model="sheet" hide-overlay dense>   <!-- User List ? -->
+    <v-bottom-sheet v-model="$store.state.settings.friendSheet" hide-overlay dense>   <!-- User List ? -->
       <v-sheet class="text-center" height="200px">
-        <v-btn class="mt-6" flat color="red" @click="sheet = !sheet" icon><v-icon>fas fa-times</v-icon></v-btn>
+        <v-btn class="mt-6" text color="red" @click="$store.dispatch('toggleFriends')" icon><v-icon>fas fa-times</v-icon></v-btn>
         <div>Frwends? :3</div>
       </v-sheet>
     </v-bottom-sheet>   <!-- End User List -->
-
-    <v-dialog v-model="dialog" width="500">   <!-- Some kind of settings? -->
-      <v-card>
-        <v-card-title class="headline lighten-2" primary-title>Settings?</v-card-title>
-
-        <v-card-text>This could be settings but you playin</v-card-text>
-
-        <v-divider></v-divider>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="dialog = !dialog">Close</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>   <!-- End Settings -->
 
   </div>
 </template>
@@ -83,8 +68,6 @@
     name: 'Chat',
     data: () => ({
       text: '',
-      drawer: null,
-      sheet: null,
       dialog: null,
     }),
     props: {
@@ -103,6 +86,10 @@
         this.$parent.sendMsg({username: this.username, text: this.text})
         this.text = ''
       }
+    },
+    beforeMount () {
+      if (this.$store.state.settings.friendSheet)
+        this.$store.dispatch('toggleFriends')
     }
   }
 </script>

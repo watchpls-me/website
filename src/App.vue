@@ -15,6 +15,12 @@
 </style>
 
 <script>
+  import store from './store'
+  // subscribe to store updates
+  store.subscribe((mutation, state) => {
+    localStorage.setItem('store', JSON.stringify(state))
+  })
+
 export default {
   name: 'App',
 
