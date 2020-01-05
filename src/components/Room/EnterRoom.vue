@@ -74,7 +74,6 @@
     }),
     methods: {
       guestLogin () {
-        console.log('t')
         this.$emit('input', this.username)
       }
     }

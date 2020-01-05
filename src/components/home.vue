@@ -59,10 +59,10 @@
 
         <div id="foot"> <!-- Footer..but you knew that :flushed: -->
           <v-footer>
-          <v-btn text icon href="https://chrome.google.com/webstore/category/extensions"><v-icon left>fab fa-chrome</v-icon></v-btn>
-          <v-spacer></v-spacer>
-          <div id="copyright">&copy;2019 — <strong>WatchPls</strong></div>
-        </v-footer>
+            <v-btn text icon href="https://chrome.google.com/webstore/category/extensions"><v-icon left>fab fa-chrome</v-icon></v-btn>
+            <v-spacer></v-spacer>
+            <div id="copyright">&copy;2019 — <strong>WatchPls</strong></div>
+          </v-footer>
         </div>
       </div>
     </v-content>
@@ -98,10 +98,10 @@ export default {
   data: () => ({
     items: [
       {
-        title: "Watch Please!", text: "Watch whatever with whoever! WatchPls makes it easy to be with your friends always!", icon: "fas fa-play"
+        title: "Watch Please!", text: "Watch whatever with whoever! WatchPls makes it easy to be with your friends always.", icon: "fas fa-play"
       },
       {
-        title: "Private Rooms!", text: "Each room has its own completely random link accessible only by you and friends! Share wisely!", icon: "fas fa-lock"
+        title: "Private Rooms!", text: "Each room has its own completely random link accessible only by you and friends. Share wisely!", icon: "fas fa-lock"
       },
       {
         title: "Share Anything!", text: "New YouTube video? Favorite Netflix episode? Maybe Hulu? Share it with others easily!", icon: "far fa-file"

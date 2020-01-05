@@ -1,7 +1,9 @@
 <template>
     <div v-resize="onResize">
-        <Chat v-if="" :username="username" :msgs="msgs"></Chat>
+        <Chat :username="username" :msgs="msgs"></Chat>
         <v-flex xs12 class="text-sm-center video-container">
+            <!-- <v-card v-show="f" xs12 class="text-sim-center video-container" height="100%" width="100%"><v-img height="100%" src="@/assets/space.jpg"></v-img></v-card> -->
+            <!-- <v-overlay v-show="!show" absolute color="black" opacity="1" :key="show"></v-overlay> -->
             <video
                     ref="video"
                     class="text-sm-center"
@@ -10,7 +12,8 @@
                     controls
                     :muted="false"
                     width="100%"
-                    :height="windowSize.y-50"
+                    :height="windowSize.y-48"
+                    poster="black"
             />
         </v-flex>
     </div>
@@ -80,7 +83,7 @@
       connection.join()
 
       socket.on('getchat', (data) => {
-        console.log('data: ' + data)
+        // console.log('data: ' + data)
         this.msgs.push(data)
       })
       socket.emit('join', this.$route.params.id)
@@ -100,6 +103,7 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
+        background: black;
     }
 
     html {
