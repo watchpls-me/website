@@ -1,9 +1,17 @@
 <template>
     <div v-resize="onResize">
         <Chat v-if="" :username="username" :msgs="msgs"></Chat>
-        <v-flex xs12 class="text-sm-center">
-            <video ref="video" class="text-sm-center" autoplay playsinline controls :muted="false" width="100%"
-                   :height="windowSize.y-55"></video>
+        <v-flex xs12 class="text-sm-center video-container">
+            <video
+                    ref="video"
+                    class="text-sm-center"
+                    autoplay
+                    playsinline
+                    controls
+                    :muted="false"
+                    width="100%"
+                    :height="windowSize.y-50"
+            />
         </v-flex>
     </div>
 </template>
@@ -85,6 +93,15 @@
 </script>
 
 <style>
+    .video-container {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
     html {
         overflow-y: auto;
     }
