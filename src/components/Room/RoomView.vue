@@ -63,7 +63,7 @@
     },
     methods: {
       sendMsg (msg) {
-        socket.emit('sendchat', { room: this.$route.params.id, username: msg.username, text: msg.text })
+        socket.emit('sendchat', msg)
       },
       onResize () {
         this.windowSize = { x: window.innerWidth, y: window.innerHeight }

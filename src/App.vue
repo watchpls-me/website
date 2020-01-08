@@ -12,6 +12,12 @@
   html {
     overflow-y: auto;
   }
+  img.emoji {
+    height: 1.5em;
+    width: 1.52em;
+    margin: 0 .05em 0 .1em;
+    vertical-align: -0.1em;
+  }
 </style>
 
 <script>
