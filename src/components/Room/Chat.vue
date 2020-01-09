@@ -1,87 +1,135 @@
 <template>
-  <div>   <!-- Containment Div : ) -->
+    <div>   <!-- Containment Div : ) -->
 
-    <v-navigation-drawer id="chatDrawer" v-model="$store.state.settings.chatWindow" app right hide-overlay bottom>    <!-- Start Chat -->
+        <v-navigation-drawer id="chatDrawer" v-model="$store.state.settings.chatWindow" app right hide-overlay bottom>
+            <!-- Start Chat -->
 
-        <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition" attach="#chatDrawer">   <!-- Some kind of settings? -->
-            <v-card>
-                <v-card-title class="headline lighten-2" primary-title>Settings</v-card-title>
+            <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition"
+                      attach="#chatDrawer">   <!-- Some kind of settings? -->
+                <v-card>
+                    <v-card-title class="headline lighten-2" primary-title>Settings</v-card-title>
 
-                <v-divider></v-divider>
+                    <v-divider></v-divider>
 
-                <v-card-text>
-                    <v-layout row wrap>
-                        <v-flex xs12>
-                            <h3 class="pa-2">Name color</h3>
-                            <v-color-picker
-                                    v-model="userColor"
-                                    hide-mode-switch
-                                    hide-inputs
-                                    flat
-                            />
-                        </v-flex>
-                    </v-layout>
-                </v-card-text>
+                    <v-card-text>
+                        <v-layout row wrap>
+                            <v-flex xs12>
+                                <h3 class="pa-2">Name color</h3>
+                                <v-color-picker
+                                        v-model="userColor"
+                                        hide-mode-switch
+                                        hide-inputs
+                                        flat
+                                />
+                            </v-flex>
+                        </v-layout>
+                    </v-card-text>
 
-                <v-divider></v-divider>
+                    <v-divider></v-divider>
 
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="primary" text @click="dialog = !dialog">Close</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>   <!-- End Settings -->
-
-        <template v-slot:prepend>
-            <v-card class="d-flex justify-space-between pa-2" flat>
-                <v-card flat>
-                    <v-btn icon @click.stop="$store.dispatch('toggleChat')">
-                        <v-icon>fas fa-chevron-right</v-icon>
-                    </v-btn>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" text @click="dialog = !dialog">Close</v-btn>
+                    </v-card-actions>
                 </v-card>
-                <v-card class="pt-1" flat><h3>Chat</h3></v-card>
-                <v-card flat>
-                    <v-btn icon @click="dialog = !dialog">
-                        <v-icon>fas fa-cog</v-icon>
-                    </v-btn>
+            </v-dialog>   <!-- End Settings -->
+
+            <template v-slot:prepend>
+                <v-card class="d-flex justify-space-between pa-2" flat>
+                    <v-card flat>
+                        <v-btn icon @click.stop="$store.dispatch('toggleChat')">
+                            <v-icon>fas fa-chevron-right</v-icon>
+                        </v-btn>
+                    </v-card>
+                    <v-card class="pt-1" flat><h3>Chat</h3></v-card>
+                    <v-card flat>
+                        <v-btn icon @click="dialog = !dialog">
+                            <v-icon>fas fa-cog</v-icon>
+                        </v-btn>
+                    </v-card>
                 </v-card>
-            </v-card>
-        </template>
-        <div id="chat" class="pa-2" v-chat-scroll></div>
-        <template v-slot:append>
-            <div class="pa-2">
-                <v-textarea
-                        v-model="text"
-                        :disabled="!username"
-                        :placeholder="(username) ? 'Chat' : 'A username is needed to chat'"
-                        auto-grow
-                        rows="1"
-                        outlined
-                        dense
-                        v-on:keydown.enter.exact="sendChat"
-                />
-            </div>
-        </template>
-    </v-navigation-drawer>      <!-- End Chat -->
+            </template>
+            <div id="chat" class="pa-2" v-chat-scroll></div>
+            <template v-slot:append>
+                <v-menu v-model="emojiGuessMenu" top offset-y>
+                    <template v-slot:activator="{ on }">
+                        <div class="pa-2">
+                            <v-menu
+                                    v-model="emojiMenu"
+                                    :close-on-content-click="false"
+                                    offset-x
+                                    left
+                            >
+                                <template v-slot:activator="{ on }">
+                                    <v-textarea
+                                            v-model="text"
+                                            id="chatTextField"
+                                            :disabled="!username"
+                                            :placeholder="(username) ? 'Chat' : 'A username is needed to chat'"
+                                            append-icon="fas fa-smile"
+                                            @click:append="emojiMenu = !emojiMenu"
+                                            rows="1"
+                                            auto-grow
+                                            outlined
+                                            v-on:keydown.enter.exact="sendChat"
+                                    />
+                                </template>
+                                <Picker
+                                        :data="emojiIndex"
+                                        set="twitter"
+                                        title="Pick your emoji…"
+                                        emoji="flushed"
+                                        @select="addEmoji"
+                                ></Picker>
+                            </v-menu>
+                        </div>
+                    </template>
+                    <v-list id="emojiGuessMenu" v-if="emojiGuesses.length">
+                        <v-list-item
+                                v-for="(emoji, index) in emojiGuesses.slice(0, 3)"
+                                :key="index"
+                                @click="processEmoji(emoji)"
+                        >
+                            <v-list-item-title>{{ `${emoji.native} ${emoji.colons}` }}</v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
+            </template>
+        </v-navigation-drawer>      <!-- End Chat -->
 
-    <v-bottom-sheet v-model="$store.state.settings.friendSheet" hide-overlay dense>   <!-- User List ? -->
-      <v-sheet class="text-center" height="200px">
-        <v-btn class="mt-6" text color="red" @click="$store.dispatch('toggleFriends')" icon><v-icon>fas fa-times</v-icon></v-btn>
-        <div>Frwends? :3</div>
-      </v-sheet>
-    </v-bottom-sheet>   <!-- End User List -->
+        <v-bottom-sheet v-model="$store.state.settings.friendSheet" hide-overlay dense>   <!-- User List ? -->
+            <v-sheet class="text-center" height="200px">
+                <v-btn class="mt-6" text color="red" @click="$store.dispatch('toggleFriends')" icon>
+                    <v-icon>fas fa-times</v-icon>
+                </v-btn>
+                <div>Frwends? :3</div>
+            </v-sheet>
+        </v-bottom-sheet>   <!-- End User List -->
 
-  </div>
+    </div>
 </template>
 
 <script>
+  import data from 'emoji-mart-vue-fast/data/all.json'
+  import { Picker, EmojiIndex } from 'emoji-mart-vue-fast'
+
+  let emojiIndex = new EmojiIndex(data)
+  import 'emoji-mart-vue-fast/css/emoji-mart.css'
+
   import moment from 'moment'
+
   export default {
     name: 'Chat',
+    components: { Picker },
     data: () => ({
       text: '',
       userColor: '#FFFFFF',
       dialog: null,
+      emojiMenu: false,
+      emojiGuessMenu: false,
+      inProcessEmoji: '',
+      emojiGuesses: [],
+      emojiIndex: emojiIndex,
     }),
     props: {
       username: {
@@ -93,9 +141,32 @@
       }
     },
     watch: {
+      text () {
+        // find emojis
+        const regex1 = /(:[a-zA-Z0-9_-]{2,})/g
+        const regex2 = /(:[\s\S]*:)/g
+        this.inProcessEmoji = this.text.match(regex1)
+        const finalEmoji = this.text.match(regex2)
+
+        this.emojiGuessMenu = false
+        // emoji is being typed :em...
+        if (this.inProcessEmoji) {
+          this.emojiGuesses = emojiIndex.search(this.inProcessEmoji[0].substr(1))
+          if (this.emojiGuesses.length)
+            this.emojiGuessMenu = true
+          // dont look
+          setTimeout(function () { twemoji.parse(document.getElementById('emojiGuessMenu')) }, 100)
+        }
+        // emoji is typed :emoji:
+        if (finalEmoji) {
+          const emojiName = finalEmoji[0].substring(1, finalEmoji[0].length - 1)
+          this.text = this.text.replace(finalEmoji[0], '')
+          this.addEmoji(emojiIndex.search(emojiName)[0])
+        }
+      },
       msgs (newVal) {
 
-        const msg = newVal[newVal.length-1]
+        const msg = newVal[newVal.length - 1]
         const now = moment().format('h:mm')
 
         const usernameDiv = document.createElement('span')
@@ -106,11 +177,11 @@
 
         contentDiv.textContent = `${msg.content}`
 
-        document.getElementById("chat").appendChild(usernameDiv)
-        document.getElementById("chat").appendChild(contentDiv)
-        document.getElementById("chat").appendChild(endLineDiv)
+        document.getElementById('chat').appendChild(usernameDiv)
+        document.getElementById('chat').appendChild(contentDiv)
+        document.getElementById('chat').appendChild(endLineDiv)
 
-        twemoji.parse(document.getElementById("chat"))
+        twemoji.parse(document.getElementById('chat'))
       }
     },
     methods: {
@@ -123,6 +194,22 @@
           content: this.text
         })
         this.text = ''
+      },
+      addEmoji (emoji) {
+        const chatTextField = document.getElementById('chatTextField')
+        const cursorIndex = chatTextField.selectionEnd
+        this.text = this.text.substring(0, cursorIndex) + emoji.native + this.text.substring(cursorIndex)
+        this.emojiMenu = false
+        chatTextField.focus()
+
+        twemoji.parse(chatTextField)
+      },
+      processEmoji (emoji) {
+        if (this.inProcessEmoji) {
+          const startPos = this.text.indexOf(this.inProcessEmoji[0])
+          this.text = this.text.replace(this.inProcessEmoji[0], '')
+          this.text = [this.text.slice(0, startPos), emoji.native, this.text.slice(startPos)].join('')
+        }
       }
     },
     beforeMount () {
