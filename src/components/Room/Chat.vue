@@ -70,7 +70,6 @@
                                             @click:append="emojiMenu = !emojiMenu"
                                             rows="1"
                                             auto-grow
-                                            outlined
                                             v-on:keydown.enter.exact="sendChat"
                                     />
                                 </template>
@@ -102,7 +101,8 @@
                 <v-btn class="mt-6" text color="red" @click="$store.dispatch('toggleFriends')" icon>
                     <v-icon>fas fa-times</v-icon>
                 </v-btn>
-                <div>Frwends? :3</div>
+                <div>User List</div>
+                <div>Coming Soon!</div>
             </v-sheet>
         </v-bottom-sheet>   <!-- End User List -->
 

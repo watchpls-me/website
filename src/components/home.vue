@@ -61,7 +61,7 @@
           <v-footer>
             <v-btn text icon href="https://chrome.google.com/webstore/category/extensions"><v-icon left>fab fa-chrome</v-icon></v-btn>
             <v-spacer></v-spacer>
-            <div id="copyright">&copy;2019 — <strong>WatchPls</strong></div>
+            <div id="copyright">&copy;{{(new Date()).getFullYear()}} — <strong>WatchPls</strong></div>
           </v-footer>
         </div>
       </div>

@@ -35,7 +35,7 @@
                                     Sign in
                                 </v-card-title>
                                 <v-card-text>
-                                    todo...
+                                    Coming Soon
                                 </v-card-text>
                             </v-card>
                         </v-hover>
@@ -48,7 +48,7 @@
                                     Continue as guest
                                 </v-card-title>
                                 <v-card-text>
-                                    Use a temporary account to do basic features
+                                    Use a temporary account to chat and watch
                                 </v-card-text>
                             </v-card>
                         </v-hover>
