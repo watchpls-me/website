@@ -49,7 +49,7 @@
 
             <div id="chat" class="pa-2" v-chat-scroll>
                 <v-flex xs12 v-for="msg in msgs" class="mb-2">
-                    <small>{{ new Date() | moment('h:mm') }} </small>
+                    <small>{{ msg.timestamp }} </small>
                     <b :style="`color: ${msg.author.color};`">{{ msg.author.name }}</b>:
                     <span> {{ msg.content }}</span>
                 </v-flex>
@@ -115,8 +115,10 @@
 </template>
 
 <script>
+  import moment from 'moment'
   import data from 'emoji-mart-vue-fast/data/all.json'
   import { Picker, EmojiIndex } from 'emoji-mart-vue-fast'
+
   let emojiIndex = new EmojiIndex(data)
   import 'emoji-mart-vue-fast/css/emoji-mart.css'
 
@@ -175,11 +177,12 @@
         if (e.keyCode === 13 && !e.shiftKey)
           e.preventDefault()
         if (this.text)
-            this.$parent.sendMsg({
-              room: this.$route.params.id,
-              author: { name: this.username, color: this.userColor },
-              content: this.text
-            })
+          this.$parent.sendMsg({
+            room: this.$route.params.id,
+            author: { name: this.username, color: this.userColor },
+            timestamp: moment().format('h:mm'),
+            content: this.text
+          })
         this.text = ''
       },
       addEmoji (emoji) {
