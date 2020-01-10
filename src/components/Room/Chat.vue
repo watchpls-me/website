@@ -7,7 +7,11 @@
             <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition"
                       attach="#chatDrawer">   <!-- Some kind of settings? -->
                 <v-card>
-                    <v-card-title class="headline lighten-2" primary-title>Settings</v-card-title>
+                    <v-card-title class="headline lighten-2" primary-title>
+                        <span>Settings</span>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" text @click="dialog = !dialog">Close</v-btn>
+                    </v-card-title>
 
                     <v-divider></v-divider>
 
@@ -24,13 +28,6 @@
                             </v-flex>
                         </v-layout>
                     </v-card-text>
-
-                    <v-divider></v-divider>
-
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="primary" text @click="dialog = !dialog">Close</v-btn>
-                    </v-card-actions>
                 </v-card>
             </v-dialog>   <!-- End Settings -->
 
@@ -49,18 +46,26 @@
                     </v-card>
                 </v-card>
             </template>
-            <div id="chat" class="pa-2" v-chat-scroll></div>
+
+            <div id="chat" class="pa-2" v-chat-scroll>
+                <v-flex xs12 v-for="msg in msgs" class="mb-2">
+                    <small>{{ new Date() | moment('h:mm') }} </small>
+                    <b :style="`color: ${msg.author.color};`">{{ msg.author.name }}</b>:
+                    <span> {{ msg.content }}</span>
+                </v-flex>
+            </div>
+
             <template v-slot:append>
-                <v-menu v-model="emojiGuessMenu" top offset-y>
-                    <template v-slot:activator="{ on }">
-                        <div class="pa-2">
+                <div class="pa-2">
+                    <v-menu v-model="emojiGuessMenu" top offset-y flat>
+                        <template v-slot:activator="{ on: menu1 }">
                             <v-menu
                                     v-model="emojiMenu"
                                     :close-on-content-click="false"
                                     offset-x
                                     left
                             >
-                                <template v-slot:activator="{ on }">
+                                <template v-slot:activator="{ menu2 }">
                                     <v-textarea
                                             v-model="text"
                                             id="chatTextField"
@@ -81,18 +86,18 @@
                                         @select="addEmoji"
                                 ></Picker>
                             </v-menu>
-                        </div>
-                    </template>
-                    <v-list id="emojiGuessMenu" v-if="emojiGuesses.length">
-                        <v-list-item
-                                v-for="(emoji, index) in emojiGuesses.slice(0, 3)"
-                                :key="index"
-                                @click="processEmoji(emoji)"
-                        >
-                            <v-list-item-title>{{ `${emoji.native} ${emoji.colons}` }}</v-list-item-title>
-                        </v-list-item>
-                    </v-list>
-                </v-menu>
+                        </template>
+                        <v-list id="emojiGuessMenu" v-if="emojiGuesses.length">
+                            <v-list-item
+                                    v-for="(emoji, index) in emojiGuesses.slice(0, 3)"
+                                    :key="emoji.colons"
+                                    @click="processEmoji(emoji)"
+                            >
+                                <v-list-item-title>{{ `${emoji.native} ${emoji.colons}` }}</v-list-item-title>
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
+                </div>
             </template>
         </v-navigation-drawer>      <!-- End Chat -->
 
@@ -112,11 +117,8 @@
 <script>
   import data from 'emoji-mart-vue-fast/data/all.json'
   import { Picker, EmojiIndex } from 'emoji-mart-vue-fast'
-
   let emojiIndex = new EmojiIndex(data)
   import 'emoji-mart-vue-fast/css/emoji-mart.css'
-
-  import moment from 'moment'
 
   export default {
     name: 'Chat',
@@ -155,44 +157,29 @@
           if (this.emojiGuesses.length)
             this.emojiGuessMenu = true
           // dont look
-          setTimeout(function () { twemoji.parse(document.getElementById('emojiGuessMenu')) }, 100)
+          setTimeout(() => twemoji.parse(document.getElementById('emojiGuessMenu')), 100)
         }
         // emoji is typed :emoji:
         if (finalEmoji) {
           const emojiName = finalEmoji[0].substring(1, finalEmoji[0].length - 1)
           this.text = this.text.replace(finalEmoji[0], '')
-          this.addEmoji(emojiIndex.search(emojiName)[0])
+          this.addEmoji(emojiIndex.findEmoji(emojiName))
         }
       },
       msgs (newVal) {
-
-        const msg = newVal[newVal.length - 1]
-        const now = moment().format('h:mm')
-
-        const usernameDiv = document.createElement('span')
-        const contentDiv = document.createElement('span')
-        const endLineDiv = document.createElement('div')
-
-        usernameDiv.innerHTML = `<small>${now}</small> <b style="color: ${msg.author.color};">${msg.author.name}</b>: `
-
-        contentDiv.textContent = `${msg.content}`
-
-        document.getElementById('chat').appendChild(usernameDiv)
-        document.getElementById('chat').appendChild(contentDiv)
-        document.getElementById('chat').appendChild(endLineDiv)
-
-        twemoji.parse(document.getElementById('chat'))
+        setTimeout(() => twemoji.parse(document.getElementById('chat')), 10)
       }
     },
     methods: {
       sendChat (e) {
         if (e.keyCode === 13 && !e.shiftKey)
           e.preventDefault()
-        this.$parent.sendMsg({
-          room: this.$route.params.id,
-          author: { name: this.username, color: this.userColor },
-          content: this.text
-        })
+        if (this.text)
+            this.$parent.sendMsg({
+              room: this.$route.params.id,
+              author: { name: this.username, color: this.userColor },
+              content: this.text
+            })
         this.text = ''
       },
       addEmoji (emoji) {
@@ -209,6 +196,9 @@
           const startPos = this.text.indexOf(this.inProcessEmoji[0])
           this.text = this.text.replace(this.inProcessEmoji[0], '')
           this.text = [this.text.slice(0, startPos), emoji.native, this.text.slice(startPos)].join('')
+
+          const chatTextField = document.getElementById('chatTextField')
+          chatTextField.focus()
         }
       }
     },

@@ -45,6 +45,8 @@
     OfferToReceiveVideo: true
   }
 
+  connection.enableLogs = false
+
   export default {
     name: 'RoomView',
     components: { Chat },
