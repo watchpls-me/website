@@ -1,7 +1,13 @@
 <template>
     <div>   <!-- Containment Div : ) -->
 
-        <v-navigation-drawer id="chatDrawer" v-model="$store.state.settings.chatWindow" app right hide-overlay bottom>
+        <v-navigation-drawer
+                id="chatDrawer"
+                v-model="$store.state.settings.chatWindow"
+                app
+                right
+                hide-overlay
+                v-bind:bottom="this.$vuetify.breakpoint.name === 'xs'">
             <!-- Start Chat -->
 
             <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition"
@@ -21,8 +27,8 @@
                                 <h3 class="pa-2">Name color</h3>
                                 <v-color-picker
                                         v-model="userColor"
+                                        mode="hexa"
                                         hide-mode-switch
-                                        hide-inputs
                                         flat
                                 />
                             </v-flex>
@@ -48,10 +54,10 @@
             </template>
 
             <div id="chat" class="pa-2" v-chat-scroll>
-                <v-flex xs12 v-for="msg in msgs" class="mb-2">
+                <v-flex xs12 v-for="(msg, i) in msgs" class="mb-2">
                     <small>{{ msg.timestamp }} </small>
                     <b :style="`color: ${msg.author.color};`">{{ msg.author.name }}</b>:
-                    <span> {{ msg.content }}</span>
+                    <span ref="msgContent"> {{ msg.content }}</span>
                 </v-flex>
             </div>
 
@@ -169,7 +175,16 @@
         }
       },
       msgs (newVal) {
-        setTimeout(() => twemoji.parse(document.getElementById('chat')), 10)
+        setTimeout(() => {
+          // parse html retroactively
+          let msg = this.$refs.msgContent[newVal.length-1].innerHTML
+          this.$refs.msgContent[newVal.length-1].innerHTML = msg.replace(/(http|https)\:\/\/([^\s]{2,})/g, x => {
+            return `<a href="${x}" target="_blank">${x}</a>`
+          })
+
+          // parse emojis
+          twemoji.parse(document.getElementById('chat'))
+        }, 10)
       }
     },
     methods: {
