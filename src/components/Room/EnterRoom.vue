@@ -10,12 +10,13 @@
                             ref="guestUsername"
                             v-model="username"
                             placeholder="Username"
+                            :counter="15"
                             :rules="usernameRules"
                     ></v-text-field>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn :disabled="!formValid" color="primary" text type="submit">Join the fun</v-btn>
+                    <v-btn :disabled="!formValid" color="primary" text type="submit">Join</v-btn>
                 </v-card-actions>
                 </v-form>
             </v-card>
@@ -35,7 +36,7 @@
                                     Sign in
                                 </v-card-title>
                                 <v-card-text>
-                                    todo...
+                                    Coming Soon
                                 </v-card-text>
                             </v-card>
                         </v-hover>
@@ -48,7 +49,7 @@
                                     Continue as guest
                                 </v-card-title>
                                 <v-card-text>
-                                    Use a temporary account to do basic features
+                                    Use a temporary account to chat and watch
                                 </v-card-text>
                             </v-card>
                         </v-hover>
@@ -69,9 +70,15 @@
       username: '',
       usernameRules: [
         v => !!v || 'Username is required',
-        v => v.length <= 10 || 'Name must be less than 10 characters',
+        v => v.length <= 15 || 'Name cannot be more than 15 characters',
       ],
     }),
+    watch: {
+      dialog (newVal) {
+        if (newVal)
+          setTimeout(() => this.$refs.guestUsername.focus(), 100)
+      }
+    },
     methods: {
       guestLogin () {
         this.$emit('input', this.username)
