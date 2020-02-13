@@ -45,6 +45,23 @@
     OfferToReceiveVideo: true
   }
 
+  connection.iceServers = [
+    {
+      urls: [
+        'stun:watchpls.me:3478',
+        'stun:watchpls.me:5349',
+      ]
+    },
+    {
+      urls: [
+        'turn:watchpls.me:3478',
+        'turn:watchpls.me:5349',
+      ],
+      username: 'watchpls',
+      credential: 'pantspooping'
+    }
+  ]
+
   export default {
     name: 'RoomView',
     components: { Chat },
@@ -75,6 +92,7 @@
 
       const video = this.$refs.video
       connection.onstream = function (e) {
+        console.log(e.stream)
         if (!video.srcObject)
           video.srcObject = e.stream
       }
