@@ -6,15 +6,17 @@
             <!-- <v-overlay v-show="!show" absolute color="black" opacity="1" :key="show"></v-overlay> -->
             <video
                     ref="video"
-                    class="text-sm-center"
-                    autoplay
                     playsinline
+                    class="text-sm-center"
                     controls
-                    :muted="false"
                     width="100%"
                     :height="windowSize.y-48"
                     poster="black"
+                    @pause="pausePressed"
+                    @play="playPressed"
+                    @volumechange="volumeChanged"
             />
+
         </v-flex>
     </div>
 </template>
@@ -73,12 +75,14 @@
         x: 0,
         y: 0,
       },
+      stream: false, // Holds the MediaStream object
+      lastStateMuted: false,
     }),
     props: {
       username: {
         value: String,
         default: '',
-      }
+      },
     },
     methods: {
       sendMsg (msg) {
@@ -87,16 +91,72 @@
       onResize () {
         this.windowSize = { x: window.innerWidth, y: window.innerHeight }
       },
+      pausePressed () {
+        this.stream.mute()
+      },
+      playPressed () {
+        let video = this.$refs.video
+
+        // Set src object only if not set
+        if (!video.srcObject) {
+          video.srcObject = this.stream
+        }
+
+        setTimeout(() => {
+          this.stream.unmute()
+
+          let playPromise = video.play()
+
+          if (playPromise !== undefined) {
+            playPromise.then(_ => {
+              // Automatic playback started!
+              // Show playing UI.
+            }).catch(error => {
+              // Auto-play was prevented
+              // Show paused UI.
+            })
+          }
+        }, 100)
+      },
+      volumeChanged() {
+        let video = this.$refs.video
+        let volume = video.volume
+        let muted = video.muted
+        if(muted){
+          this.stream.mute("audio")
+          this.lastStateMuted = true
+        }else{
+          // Prevent multiple fires of this
+          // when user changes the volume
+          if(this.lastStateMuted){
+            this.lastStateMuted = false
+            this.stream.unmute()
+          }
+        }
+      }
     },
     mounted () {
       // get window size
       this.onResize()
 
-      const video = this.$refs.video
-      connection.onstream = function (e) {
+      connection.onstream = (e) => {
         console.log(e.stream)
-        if (!video.srcObject)
-          video.srcObject = e.stream
+
+        if (!this.stream) {
+          this.stream = e.stream
+          this.stream.mute("audio")
+          this.playPressed()
+
+          // Save peoples ears upon entering the stream just in case
+          this.$refs.video.volume = 0.3
+        }
+      }
+
+      connection.onclose = (e) => {
+        // TODO: Use to display message to user if host dc's
+        this.pausePressed()
+        this.stream = false
+        this.$refs.video.srcObject = ''
       }
 
       connection.channel = connection.sessionid = this.$route.params.id
@@ -107,7 +167,8 @@
         this.msgs.push(data)
       })
       socket.emit('join', this.$route.params.id)
-    },
+    }
+    ,
     beforeDestroy () {
       connection.close()
       socket.close()
@@ -141,16 +202,15 @@
         background: white;
     }
 
-    video::-webkit-media-controls-fullscreen-button:hover, 
-    video::-webkit-media-controls-mute-button:hover, 
+    video::-webkit-media-controls-fullscreen-button:hover,
+    video::-webkit-media-controls-mute-button:hover,
     video::-webkit-media-controls-play-button:hover {
         opacity: 0.7;
     }
 
     video::-webkit-media-controls-current-time-display,
     video::-webkit-media-controls-timeline,
-    video::-webkit-media-controls-timeline-container
-    {
-        display:none !important;
+    video::-webkit-media-controls-timeline-container {
+        display: none !important;
     }
 </style>
