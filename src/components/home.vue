@@ -8,7 +8,7 @@
             <v-container fill-height fluid>
               <v-row align="center" justify="center" no-gutters>
                 <v-col cols="auto" xs="4">
-                  <v-card hover href="https://chrome.google.com/webstore/category/extensions">
+                  <v-card hover href="https://chrome.google.com/webstore/detail/watchpls/iiccelmcaeljhopnbmofjnfpgpddmnpd">
                     <v-list-item>
                       <v-list-item-avatar>
                         <div class="d-flex align-center">
@@ -59,7 +59,7 @@
 
         <div id="foot"> <!-- Footer..but you knew that :flushed: -->
           <v-footer>
-            <v-btn text icon href="https://chrome.google.com/webstore/category/extensions"><v-icon left>fab fa-chrome</v-icon></v-btn>
+            <v-btn text icon href="https://chrome.google.com/webstore/detail/watchpls/iiccelmcaeljhopnbmofjnfpgpddmnpd"><v-icon>fab fa-chrome</v-icon></v-btn>
             <v-spacer></v-spacer>
             <div id="copyright">&copy;{{(new Date()).getFullYear()}} — <strong>WatchPls</strong></div>
           </v-footer>
